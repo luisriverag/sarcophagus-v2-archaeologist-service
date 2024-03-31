@@ -13,7 +13,6 @@ export async function publishPrivateKey(sarcoId: string, networkContext: Network
   archLogger.notice(`[${networkContext.networkName}] Unwrapping sarcophagus ${sarcoId}`, true);
 
   try {
-
     inMemoryStore
       .get(networkContext.chainId)!
       .sarcoIdsInProcessOfHavingPrivateKeyPublished.push(sarcoId);
@@ -22,7 +21,8 @@ export async function publishPrivateKey(sarcoId: string, networkContext: Network
     const myCursedArch = await rpcCallWithTimeout(
       viewStateFacet.getSarcophagusArchaeologist,
       [sarcoId, ethWallet.address],
-      { timeout: 5000, retries: 5 }
+      { timeout: 5000, retries: 5 },
+      networkContext
     );
 
     archLogger.notice(`Public Key Found: ${myCursedArch.publicKey}`);

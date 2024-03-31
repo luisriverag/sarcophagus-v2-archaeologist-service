@@ -1,4 +1,6 @@
 import { archLogger } from "../logger/chalk-theme";
+import { NetworkContext } from "../network-config";
+import { resetNetworkContext } from "./contract-event-listeners";
 
 interface RpcCallWithTimeoutOptions {
   timeout: number;
@@ -10,7 +12,8 @@ export async function rpcCallWithTimeout(
   options: RpcCallWithTimeoutOptions = {
     timeout: 5000,
     retries: 5
-  }
+  },
+  networkContext: NetworkContext
 ) {
   const {
     timeout,
@@ -36,8 +39,13 @@ export async function rpcCallWithTimeout(
     } catch (e) {
       lastError = e;
       archLogger.notice(`rpcCallWithTimeout Attempt ${attempt} failed: ${e.message}`);
+
       if (attempt === retries) {
+        // If this fails, force service to restart to trigger re-attempt at unwrapping
+        process.exit(2)
         throw e; // Re-throw the last error if all retries failed
+      } else {
+        await resetNetworkContext(networkContext)
       }
     }
   }

@@ -17,6 +17,8 @@ The CLI provides the archaeologist service a way to quickly interact with the co
 > cli register --digging-fee 100 --rewrap-interval 10000 --free-bond 200
 
 > cli register --view
+> 
+> cli update --max-res-time <unix_timestamp> --network=polygonMainnet
 
 # Development
 

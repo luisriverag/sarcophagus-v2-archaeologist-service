@@ -3,7 +3,7 @@ import { getWeb3Interface } from "../scripts/web3-interface";
 import { RPC_EXCEPTION } from "./exit-codes";
 import { inMemoryStore } from "./onchain-data";
 import { archLogger } from "../logger/chalk-theme";
-import { cancelSheduledPublish, schedulePublishPrivateKeyWithBuffer } from "./scheduler";
+import { cancelScheduledPublish, schedulePublishPrivateKeyWithBuffer } from "./scheduler";
 import { getBlockTimestamp, getDateFromTimestamp } from "./blockchain/helpers";
 import { ethers } from "ethers";
 import { getNetworkContextByChainId, NetworkContext } from "../network-config";
@@ -121,12 +121,12 @@ function getAccuseHandler(networkContext: NetworkContext) {
         .get(networkContext.chainId)!
         .sarcophagi.filter(s => s.id !== sarcoId);
       inMemoryStore.get(networkContext.chainId)!.deadSarcophagusIds.push(sarcoId);
-      cancelSheduledPublish(sarcoId);
+      cancelScheduledPublish(sarcoId);
     }
   };
 }
 
-const resetNetworkContext = async (networkContext: NetworkContext): Promise<void> => {
+export const resetNetworkContext = async (networkContext: NetworkContext): Promise<void> => {
   // Replace the old network context with a new one with a fresh websockets provider
   const newNetworkContext: NetworkContext = getNetworkContextByChainId(networkContext.chainId);
   (await getWeb3Interface()).networkContexts.delete(networkContext);

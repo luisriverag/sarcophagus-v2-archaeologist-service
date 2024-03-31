@@ -49,7 +49,7 @@ function schedulePublishPrivateKey(
   });
 }
 
-export function cancelSheduledPublish(sarcoId: string) {
+export function cancelScheduledPublish(sarcoId: string) {
   scheduledPublishPrivateKey[sarcoId]?.cancel();
 }
 

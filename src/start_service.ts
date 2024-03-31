@@ -12,7 +12,7 @@ import { NetworkContext } from "./network-config";
 const RESTART_INTERVAL = 21_600_000; // 6 Hours
 const CONTRACT_DATA_REFETCH_INTERVAL = process.env.REFETCH_INTERVAL
   ? Number(process.env.REFETCH_INTERVAL)
-  : 86_645_000; // (default is ~24 Hours)
+  : 21_600_000; // (default is ~6 Hours)
 
 export async function startService(opts: {
   nodeName: string;
