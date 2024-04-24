@@ -1,11 +1,12 @@
 import { archLogger } from "../../logger/chalk-theme";
 import { handleRpcError } from "../rpc-error-handler";
 import { inMemoryStore } from "../onchain-data";
-import { retryFn } from "./helpers";
+import { getRandomInt, retryFn } from "./helpers";
 import { warnIfEthBalanceIsLow } from "../health-check";
 import { ethers } from "ethers";
 import { NetworkContext } from "../../network-config";
 import { rpcCallWithTimeout } from "../rpc-helpers";
+import { schedulePublishPrivateKey } from "../scheduler";
 
 export async function publishPrivateKey(sarcoId: string, networkContext: NetworkContext) {
   const { viewStateFacet, ethWallet, archaeologistFacet, keyFinder } = networkContext;
@@ -13,11 +14,31 @@ export async function publishPrivateKey(sarcoId: string, networkContext: Network
   archLogger.notice(`[${networkContext.networkName}] Unwrapping sarcophagus ${sarcoId}`, true);
 
   try {
+    const anotherSarcoIsBeingUnrwapped = inMemoryStore
+      .get(networkContext.chainId)!
+      .sarcoIdsInProcessOfHavingPrivateKeyPublished.length > 0;
+
+    if (anotherSarcoIsBeingUnrwapped) {
+      // Attempt to reschedule
+      const currentSarco = inMemoryStore.get(networkContext.chainId)!.sarcophagi.find(sarco => sarco.id === sarcoId);
+      if (currentSarco) {
+        const newScheduleTime = new Date(Date.now() + (getRandomInt(2, 8) * 60 * 1000)) // schedule for between 2-8 minutes later
+        archLogger.notice(`Another sarco is being unwrapped, rescheduling ${sarcoId} for ${newScheduleTime.toLocaleString()}`);
+        schedulePublishPrivateKey(
+          sarcoId,
+          newScheduleTime,
+          currentSarco.contractResurrectionTime,
+          networkContext
+        );
+        return
+      }
+    }
+
     inMemoryStore
       .get(networkContext.chainId)!
       .sarcoIdsInProcessOfHavingPrivateKeyPublished.push(sarcoId);
 
-    archLogger.notice('Retrieving Public Key');
+    archLogger.notice("Retrieving Public Key");
     const myCursedArch = await rpcCallWithTimeout(
       viewStateFacet.getSarcophagusArchaeologist,
       [sarcoId, ethWallet.address],
@@ -56,7 +77,7 @@ export async function publishPrivateKey(sarcoId: string, networkContext: Network
     await archLogger.error(`[${networkContext.networkName}] Unwrap failed: ${e}`, {
       sendNotification: true,
       logTimestamp: true,
-      networkContext,
+      networkContext
     });
     handleRpcError(e, networkContext);
   } finally {

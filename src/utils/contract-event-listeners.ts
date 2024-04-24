@@ -51,6 +51,7 @@ function getCreateSarcoHandler(networkContext: NetworkContext) {
 
     inMemoryStore.get(networkContext.chainId)!.sarcophagi.push({
       id: sarcoId,
+      contractResurrectionTime: resurrectionTime.toNumber(),
       resurrectionTime: scheduledResurrectionTime,
       perSecondFee: archaeologist.diggingFeePerSecond,
       cursedAmount: archaeologist.curseFee,

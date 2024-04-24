@@ -18,6 +18,7 @@ export interface SarcophagusData {
   id: string;
   creationDate: Date;
   resurrectionTime: Date;
+  contractResurrectionTime: number;
   perSecondFee: BigNumber;
   cursedAmount: BigNumber;
   name?: string;

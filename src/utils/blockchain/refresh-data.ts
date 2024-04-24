@@ -84,6 +84,7 @@ export async function fetchSarcophagiAndSchedulePublish(
 
           sarcophagi.push({
             id: sarcoId,
+            contractResurrectionTime: sarcoFromContract.resurrectionTime.toNumber(),
             resurrectionTime: scheduledResurrectionTime,
             perSecondFee: archaeologist.diggingFeePerSecond,
             cursedAmount: archaeologist.curseFee,

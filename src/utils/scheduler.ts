@@ -7,39 +7,44 @@ import { NetworkContext } from "../network-config";
 const scheduledPublishPrivateKey: Record<string, scheduler.Job | undefined> = {};
 const sarcoIdToResurrectionTime: Record<string, number> = {};
 
-function schedulePublishPrivateKey(
+export function schedulePublishPrivateKey(
   sarcoId: string,
   resurrectionTime: Date,
   exactResurrectionTime: number,
-  networkContext: NetworkContext
+  networkContext: NetworkContext,
+  isReschedule?: boolean
 ) {
-  // If sarcophagus is being unwrapped, dont schedule job
-  const sarcoIndex = inMemoryStore
-    .get(networkContext.chainId)!
-    .sarcoIdsInProcessOfHavingPrivateKeyPublished.findIndex(id => id === sarcoId);
+  // if job is a reschedule due to conflict with another sarco, don't do pre-checks
 
-  if (sarcoIndex !== -1) {
-    return;
-  }
+  if (!isReschedule) {
+    // If sarcophagus is being unwrapped, dont schedule job
+    const sarcoIndex = inMemoryStore
+      .get(networkContext.chainId)!
+      .sarcoIdsInProcessOfHavingPrivateKeyPublished.findIndex(id => id === sarcoId);
 
-  if (!scheduledPublishPrivateKey[sarcoId]) {
-    archLogger.notice(
-      `[${networkContext.networkName}] Scheduling unwrap for ${sarcoId} at: ${
-        resurrectionTime.getTime() / 1000
-      } (${resurrectionTime.toString()})`
-    );
-  } else {
-    // If time is different than one in memory, a rewrap has occurred
-    if (sarcoIdToResurrectionTime[sarcoId] !== exactResurrectionTime) {
+    if (sarcoIndex !== -1) {
+      return;
+    }
+
+    if (!scheduledPublishPrivateKey[sarcoId]) {
       archLogger.notice(
-        `[${networkContext.networkName}] Scheduling rewrap for ${sarcoId} at: ${
+        `[${networkContext.networkName}] Scheduling unwrap for ${sarcoId} at: ${
           resurrectionTime.getTime() / 1000
         } (${resurrectionTime.toString()})`
       );
+    } else {
+      // If time is different than one in memory, a rewrap has occurred
+      // TODO: handle buried case
+      if (sarcoIdToResurrectionTime[sarcoId] !== exactResurrectionTime) {
+        archLogger.notice(
+          `[${networkContext.networkName}] Scheduling rewrap for ${sarcoId} at: ${
+            resurrectionTime.getTime() / 1000
+          } (${resurrectionTime.toString()})`
+        );
+      }
     }
   }
 
-  // Stored just for purposes of logging
   sarcoIdToResurrectionTime[sarcoId] = exactResurrectionTime;
 
   // Cancel existing schedules, so no duplicate jobs will be created.
