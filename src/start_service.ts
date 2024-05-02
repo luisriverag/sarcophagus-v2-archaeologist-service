@@ -41,7 +41,9 @@ export async function startService(opts: {
   });
 
   opts.networkContexts.forEach(async networkContext => {
-    await healthCheck(networkContext, peerId.toString());
+    if (!process.env.DISABLE_HEALTH_CHECK) {
+      await healthCheck(networkContext, peerId.toString());
+    }
 
     // The archaeologist service is currently setup to listen to contract events and automatically
     // schedule a profile publish when the relevant event is received. This should always work, but
