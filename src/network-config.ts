@@ -16,12 +16,14 @@ import {
   polygonMumbaiNetworkConfig,
   polygonMainnetNetworkConfig,
   arbitrumNetworkConfig,
+  baseMainnetNetworkConfig,
 } from "@sarcophagus-org/sarcophagus-v2-sdk";
 import {
   HARDHAT_CHAIN_ID,
   MAINNET_CHAIN_ID,
   POLYGON_MUMBAI_CHAIN_ID,
   POLYGON_MAINNET_CHAIN_ID,
+  BASE_MAINNET_CHAIN_ID,
   SEPOLIA_CHAIN_ID,
   ARBITRUM_CHAIN_ID,
   hardhatNetworkConfig,
@@ -50,6 +52,7 @@ const chainIdsToNetworkConfigReturningFunction = new Map<number, NetworkConfigRe
   [SEPOLIA_CHAIN_ID, () => sepoliaNetworkConfig()],
   [POLYGON_MUMBAI_CHAIN_ID, () => polygonMumbaiNetworkConfig()],
   [POLYGON_MAINNET_CHAIN_ID, () => polygonMainnetNetworkConfig()],
+  [BASE_MAINNET_CHAIN_ID, () => baseMainnetNetworkConfig()],
   [ARBITRUM_CHAIN_ID, () => arbitrumNetworkConfig()],
   [HARDHAT_CHAIN_ID, _ => hardhatNetworkConfig()],
 ]);
@@ -63,6 +66,7 @@ export const getNetworkContextByChainId = (chainId: number, isTest: boolean = fa
     [MAINNET_CHAIN_ID, process.env.MAINNET_PROVIDER_URL],
     [SEPOLIA_CHAIN_ID, process.env.SEPOLIA_PROVIDER_URL],
     [ARBITRUM_CHAIN_ID, process.env.ARBITRUM_PROVIDER_URL],
+    [BASE_MAINNET_CHAIN_ID, process.env.BASE_MAINNET_PROVIDER_URL],
     [POLYGON_MUMBAI_CHAIN_ID, process.env.POLYGON_MUMBAI_PROVIDER_URL],
     [POLYGON_MAINNET_CHAIN_ID, process.env.POLYGON_MAINNET_PROVIDER_URL],
     [HARDHAT_CHAIN_ID, process.env.HARDHAT_PROVIDER_URL],
@@ -106,6 +110,7 @@ export const getNetworkContextByChainId = (chainId: number, isTest: boolean = fa
     [MAINNET_CHAIN_ID, process.env.MAINNET_ENCRYPTION_MNEMONIC],
     [SEPOLIA_CHAIN_ID, process.env.SEPOLIA_ENCRYPTION_MNEMONIC],
     [ARBITRUM_CHAIN_ID, process.env.ARBITRUM_ENCRYPTION_MNEMONIC],
+    [BASE_MAINNET_CHAIN_ID, process.env.BASE_MAINNET_ENCRYPTION_MNEMONIC],
     [POLYGON_MUMBAI_CHAIN_ID, process.env.POLYGON_MUMBAI_ENCRYPTION_MNEMONIC],
     [POLYGON_MAINNET_CHAIN_ID, process.env.POLYGON_MAINNET_ENCRYPTION_MNEMONIC],
     [HARDHAT_CHAIN_ID, process.env.HARDHAT_ENCRYPTION_MNEMONIC],
