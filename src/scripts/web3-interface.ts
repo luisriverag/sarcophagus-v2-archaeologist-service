@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { exit } from "process";
 import { archLogger } from "../logger/chalk-theme";
 import { BAD_ENV } from "../utils/exit-codes";
